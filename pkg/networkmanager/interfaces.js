@@ -2854,7 +2854,9 @@ PageNetworkInterface.prototype = {
         $('#network-interface-delete').prop('hidden', !is_deletable || !managed);
 
         function render_interface_section_separator(title) {
-            return $('<tr>').append($('<td class="network-interface-separator" colspan="100%">').text(title));
+            return `<tr>
+                        <td class="network-interface-separator" colspan="100%">${title}</td>
+                    </tr>`;
         }
 
         function render_carrier_status_row() {
