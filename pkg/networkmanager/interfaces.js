@@ -2893,7 +2893,7 @@ PageNetworkInterface.prototype = {
         }
 
         function render_general_information_rows() {
-            return [render_interface_section_separator("General Information"),
+            return [/* render_interface_section_separator("General Information"), */
                 render_carrier_status_row(),
                 render_active_status_row(),
             ];
@@ -3283,8 +3283,14 @@ PageNetworkInterface.prototype = {
             }
         }
 
+        var isettings = document.getElementById('network-interface-settings');
+
+        while (isettings.firstChild)
+            isettings.removeChild(isettings.firstChild);
+
+        isettings.innerHTML += render_interface_section_separator("General Settings");
+
         $('#network-interface-settings')
-                .empty()
                 .append(render_general_information_rows())
                 .append(render_connection_settings_rows(self.main_connection, self.connection_settings));
         update_network_privileged();
