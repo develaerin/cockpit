@@ -2854,19 +2854,19 @@ PageNetworkInterface.prototype = {
         $('#network-interface-delete').prop('hidden', !is_deletable || !managed);
 
         function render_interface_section_separator(title) {
-            return `<tr>
-                        <td class="network-interface-separator" colspan="100%">${title}</td>
-                    </tr>`;
+            return title;
         }
 
         function render_carrier_status_row() {
             if (dev && dev.Carrier !== undefined) {
-                return $('<tr>').append(
-                    $('<td>').text(_("Carrier")),
-                    $('<td>').append(
-                        dev.Carrier
-                            ? (dev.Speed ? cockpit.format_bits_per_sec(dev.Speed * 1e6) : _("Yes"))
-                            : _("No")));
+                return `<tr>
+                            <td>
+                                ${_("Carrier")}
+                            </td>
+                            <td>
+                                ${dev.Carrier ? (dev.Speed ? cockpit.format_bits_per_sec(dev.Speed * 1e6) : _("Yes")) : _("No")}
+                            </td>
+                        </tr>`;
             } else
                 return null;
         }
@@ -2884,16 +2884,14 @@ PageNetworkInterface.prototype = {
             else
                 state = null;
 
-            return $('<tr>').append(
-                $('<td>').text(_("Status")),
-                $('<td>').append(
-                    render_active_connection(dev, true, false),
-                    " ",
-                    state ? $('<span>').text(state) : null));
+            return `<tr>
+                        <td>${_("Status")}</td>
+                        <td> ${state ? '<span>' + state + '</span>' : null}</td>
+                    </tr>`;
         }
 
         function render_general_information_rows() {
-            return [/* render_interface_section_separator("General Information"), */
+            return [render_interface_section_separator("General Information"),
                 render_carrier_status_row(),
                 render_active_status_row(),
             ];
@@ -3283,17 +3281,18 @@ PageNetworkInterface.prototype = {
             }
         }
 
-        var isettings = document.getElementById('network-interface-settings');
-
-        while (isettings.firstChild)
-            isettings.removeChild(isettings.firstChild);
-
-        isettings.innerHTML += render_interface_section_separator("General Settings");
-
-        $('#network-interface-settings')
-                .append(render_general_information_rows())
+        $('#network-interface-settings:last-child')
+                .empty()
                 .append(render_connection_settings_rows(self.main_connection, self.connection_settings));
         update_network_privileged();
+
+        var isettings = document.getElementById('network-interface-settings');
+
+        const information_rows = render_general_information_rows();
+
+        for (var i in information_rows) {
+            isettings.insertRow(isettings.rows.length).innerHTML = information_rows[i];
+        }
 
         function update_connection_slaves(con) {
             var tbody = $('#network-interface-slaves tbody');
