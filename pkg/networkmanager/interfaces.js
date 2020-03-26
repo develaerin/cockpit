@@ -1562,7 +1562,7 @@ function render_active_connection(dev, with_link, hide_link_local) {
         });
     }
 
-    return $('<span>').text(parts.join(", "));
+    return `<span> ${parts.join(", ")} </span>`;
 }
 
 function network_plot_setup_hook(pl) {
@@ -2855,7 +2855,7 @@ PageNetworkInterface.prototype = {
 
         function render_interface_section_separator(title) {
             return `<tr>
-                        <td class="network-interface-separator" colspan="100%">${title}</td>
+                        <td class="network-interface-separator">${title}</td>
                     </tr>`;
         }
 
@@ -2870,17 +2870,14 @@ PageNetworkInterface.prototype = {
                             </td>
                         </tr>`;
             } else
-                return null;
+                return "";
         }
 
         function render_active_status_row() {
             var state;
 
-            console.log(self);
-            console.log(dev);
-
             if (self.main_connection && self.main_connection.Masters.length > 0)
-                return null;
+                return "";
 
             if (!dev)
                 state = _("Inactive");
@@ -2891,7 +2888,7 @@ PageNetworkInterface.prototype = {
 
             return `<tr>
                         <td>${_("Status")}</td>
-                        <td> ${state ? '<span>' + state + '</span>' : null}</td>
+                        <td> ${render_active_connection(dev, true, false)} ${state ? '<span>' + state + '</span>' : ""}</td>
                     </tr>`;
         }
 
@@ -3301,6 +3298,11 @@ PageNetworkInterface.prototype = {
         $('#network-interface-settings')
                 .append(render_connection_settings_rows(self.main_connection, self.connection_settings));
         update_network_privileged();
+
+        var separators = document.querySelectorAll('.network-interface-separator');
+        for (var j = 0; j < separators.length; j++) {
+            separators[j].setAttribute("colspan", "100%");
+        }
 
         function update_connection_slaves(con) {
             var tbody = $('#network-interface-slaves tbody');
