@@ -2854,7 +2854,9 @@ PageNetworkInterface.prototype = {
         $('#network-interface-delete').prop('hidden', !is_deletable || !managed);
 
         function render_interface_section_separator(title) {
-            return title;
+            return `<tr>
+                        <td class="network-interface-separator" colspan="100%">${title}</td>
+                    </tr>`;
         }
 
         function render_carrier_status_row() {
@@ -2873,6 +2875,9 @@ PageNetworkInterface.prototype = {
 
         function render_active_status_row() {
             var state;
+
+            console.log(self);
+            console.log(dev);
 
             if (self.main_connection && self.main_connection.Masters.length > 0)
                 return null;
@@ -3281,18 +3286,21 @@ PageNetworkInterface.prototype = {
             }
         }
 
-        $('#network-interface-settings:last-child')
-                .empty()
-                .append(render_connection_settings_rows(self.main_connection, self.connection_settings));
-        update_network_privileged();
-
         var isettings = document.getElementById('network-interface-settings');
+
+        while (isettings.firstChild) {
+            isettings.removeChild(isettings.firstChild);
+        }
 
         const information_rows = render_general_information_rows();
 
         for (var i in information_rows) {
             isettings.insertRow(isettings.rows.length).innerHTML = information_rows[i];
         }
+
+        $('#network-interface-settings')
+                .append(render_connection_settings_rows(self.main_connection, self.connection_settings));
+        update_network_privileged();
 
         function update_connection_slaves(con) {
             var tbody = $('#network-interface-slaves tbody');
