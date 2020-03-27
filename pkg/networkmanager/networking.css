@@ -119,6 +119,10 @@ span.inverted-switchbox {
     margin-right: 10px;
 }
 
+.network-ip-settings-row button {
+    width: 2em;
+}
+
 .network-ip-settings-row td {
     text-align: right;
     padding-right: 0;
@@ -140,19 +144,6 @@ span.inverted-switchbox {
     margin-left: 0.5em;
 }
 
-#network-wifi-settings-dialog input {
-    width: 100%;
-}
-
-#network-wifi-settings-dialog input[type=checkbox] {
-    width: auto;
-}
-
-#network-wifi-settings-dialog .control-label {
-    min-width: 11em;
-    text-align: left;
-}
-
 #network-mtu-settings-dialog label {
     font-weight: normal;
 }
@@ -171,6 +162,10 @@ span.inverted-switchbox {
 
 #network-mac-settings-dialog label {
     font-weight: normal;
+}
+
+#network-openvpn-settings-dialog input[type=text] {
+    width: 20em;
 }
 
 #testing-connection-curtain {
