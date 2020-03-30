@@ -3539,10 +3539,10 @@ PageNetworkGeneralSettings.prototype = {
         const self = this;
         const options = self.settings.connection;
         const model = PageNetworkGeneralSettings.model;
-        const settings = model.get_settings().Connections;
+        const setts = model.get_settings().Connections;
 
         function vpn_connections_handler() {
-            for (let i in setts) {
+            for (const i in setts) {
                 const iface = setts[i][' priv'].orig.connection;
                 if (iface.type.v == "vpn") {
                     if (autovpn_select.find('option[value="' + iface.uuid.v + '"]').length == 0)
@@ -5149,8 +5149,8 @@ PageNetworkWiFiSettings.prototype = {
         const self = this;
         const connection = self.settings.connection;
         const options = self.settings.wifi;
-        const security_options = self.settings.wifi_security;
-        const auth_options = self.settings.wifi_1x;
+        let security_options = self.settings.wifi_security;
+        let auth_options = self.settings.wifi_1x;
         var mode_btn, band_btn, channel_btn, device_btn, security_btn, eap_auth_btn,
             peap_version_btn, peap_inner_auth_btn;
 
