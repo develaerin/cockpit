@@ -2055,14 +2055,14 @@ PageNetworking.prototype = {
     },
 
     add_wifi: function () {
-        var i, iface, uuid;
+        let iface;
 
-        for (i = 0; i < 100; i++) {
+        for (let i = 0; i < 100; i++) {
             iface = "wifi" + i;
             if (!this.model.find_interface(iface))
                 break;
         }
-        uuid = generate_uuid();
+        const uuid = generate_uuid();
 
         PageNetworkWiFiSettings.model = this.model;
         PageNetworkWiFiSettings.done = null;
@@ -2112,20 +2112,20 @@ function PageNetworking(model) {
     this._init(model);
 }
 
-var wifi_mode_choices =
+const wifi_mode_choices =
     [
         { choice: 'infrastructure', title: _("Client") },
         { choice: 'ap', title: _("Hotspot") }
     ];
 
-var wifi_band_choices =
+const wifi_band_choices =
     [
         { choice: '', title: _("Automatic") },
         { choice: 'a', title: _("A (5GHz)") },
         { choice: 'bg', title: _("B-G (2.4GHz)") }
     ];
 
-var wifi_bg_channel_choices =
+const wifi_bg_channel_choices =
     [
         { choice: 0, title: _("Default") },
         { choice: 1, title: _("1 (2412 MHz)") },
@@ -2144,7 +2144,7 @@ var wifi_bg_channel_choices =
         { choice: 14, title: _("14 (2484 MHz)") }
     ];
 
-var wifi_a_channel_choices =
+const wifi_a_channel_choices =
     [
         { choice: 0, title: _("Default") },
         { choice: 7, title: _("7 (5035 MHz)") },
@@ -2194,27 +2194,27 @@ var wifi_a_channel_choices =
         { choice: 196, title: _("196 (4980 MHz)") },
     ];
 
-var wifi_security_choices =
+const wifi_security_choices =
     [
         { choice: '', title: _("None") },
         { choice: 'wpa-psk', title: _("WPA & WPA2 Personal") },
         { choice: 'wpa-eap', title: _("WPA & WPA2 Enterprise") }
     ];
 
-var wifi_eap_auth_choices =
+const wifi_eap_auth_choices =
     [
         { choice: 'tls', title: _("TLS") },
         { choice: 'peap', title: _("Protected EAP (PEAP)") }
     ];
 
-var wifi_peap_version_choices =
+const wifi_peap_version_choices =
     [
         { choice: '', title: _("Automatic") },
         { choice: '0', title: _("Version 0") },
         { choice: '1', title: _("Version 1") }
     ];
 
-var wifi_peap_inner_auth_choices =
+const wifi_peap_inner_auth_choices =
     [
         { choice: 'mschapv2', title: _("MSHAPv2") },
         { choice: 'md5', title: _("MD5") },
@@ -3209,10 +3209,10 @@ PageNetworkInterface.prototype = {
             }
 
             function render_wifi_settings_row() {
-                var parts = [];
-                var rows = [];
-                var options = settings.wifi;
-                var security_options = settings.wifi_security;
+                const parts = [];
+                const rows = [];
+                const options = settings.wifi;
+                const security_options = settings.wifi_security;
 
                 if (!options)
                     return null;
@@ -3283,7 +3283,7 @@ PageNetworkInterface.prototype = {
             }
         }
 
-        var isettings = document.getElementById('network-interface-settings');
+        const isettings = document.getElementById('network-interface-settings');
 
         while (isettings.firstChild) {
             isettings.removeChild(isettings.firstChild);
@@ -3542,15 +3542,14 @@ PageNetworkGeneralSettings.prototype = {
     },
 
     update: function() {
-        var self = this;
-        var options = self.settings.connection;
-        var name_input, priority_btn, priority_input, autovpn_btn, autovpn_select;
-        var model = PageNetworkGeneralSettings.model;
-        var setts = model.get_settings().Connections;
+        const self = this;
+        const options = self.settings.connection;
+        const model = PageNetworkGeneralSettings.model;
+        const settings = model.get_settings().Connections;
 
         function vpn_connections_handler() {
-            for (var i in setts) {
-                var iface = setts[i][' priv'].orig.connection;
+            for (let i in setts) {
+                const iface = setts[i][' priv'].orig.connection;
                 if (iface.type.v == "vpn") {
                     if (autovpn_select.find('option[value="' + iface.uuid.v + '"]').length == 0)
                         autovpn_select.append(new Option(iface.id.v, iface.uuid.v));
@@ -3572,16 +3571,16 @@ PageNetworkGeneralSettings.prototype = {
                 options.secondaries.push(autovpn_select.val());
         }
 
-        var body = $(mustache.render(self.general_settings_template, { name: options.id }));
-        name_input = body.find('#network-general-settings-name-input');
+        const body = $(mustache.render(self.general_settings_template, { name: options.id }));
+        const name_input = body.find('#network-general-settings-name-input');
         name_input.change(change);
-        priority_btn = body.find('#network-general-settings-autoconnect');
+        const priority_btn = body.find('#network-general-settings-autoconnect');
         priority_btn.change(change);
-        priority_input = body.find('#network-autoconnect-priority-input');
+        const priority_input = body.find('#network-autoconnect-priority-input');
         priority_input.change(change);
-        autovpn_btn = body.find('#network-general-settings-autovpn');
+        const autovpn_btn = body.find('#network-general-settings-autovpn');
         autovpn_btn.change(change);
-        autovpn_select = body.find('#network-general-settings-autovpn-select');
+        const autovpn_select = body.find('#network-general-settings-autovpn-select');
         autovpn_select.change(change);
 
         $('#network-general-settings-body').html(body);
@@ -5153,25 +5152,22 @@ PageNetworkWiFiSettings.prototype = {
     },
 
     update: function() {
-        var self = this;
-        var connection = self.settings.connection;
-        var options = self.settings.wifi;
-        var security_options = self.settings.wifi_security;
-        var auth_options = self.settings.wifi_1x;
-        var ssid_input, personal_password_input, tls_identity_input, tls_key_password_input,
-            peap_identity_input, eap_domain_input, peap_username_input, peap_password_input;
+        const self = this;
+        const connection = self.settings.connection;
+        const options = self.settings.wifi;
+        const security_options = self.settings.wifi_security;
+        const auth_options = self.settings.wifi_1x;
         var mode_btn, band_btn, channel_btn, device_btn, security_btn, eap_auth_btn,
             peap_version_btn, peap_inner_auth_btn;
-        var eap_cert_file, tls_user_cert_file, tls_user_private_key_file;
 
-        var pwd;
-        var no_extension = /\.[^/.]+$/;
-        var process = cockpit.spawn(["pwd"]);
+        let pwd;
+        const no_extension = /\.[^/.]+$/;
+        const process = cockpit.spawn(["pwd"]);
         process.stream(function(data) {
             pwd = data;
         });
 
-        var device_choices = [];
+        const device_choices = [];
         PageNetworkWiFiSettings.model.list_interfaces().forEach(function (i) {
             if (is_interesting_interface(i) && i.Device && i.Device.DeviceType === "wifi")
                 device_choices.push({ title: i.Name, choice: i.Device.Interface });
@@ -5181,14 +5177,14 @@ PageNetworkWiFiSettings.prototype = {
             device_choices.push({ title: "Not detected", choice: "" });
 
         function search_choices(array, value) {
-            for (var i = 0; i < array.length; i++) {
+            for (let i = 0; i < array.length; i++) {
                 if (array[i].choice === value)
                     return true;
             }
         }
 
         function choicebox(env, subenv, choices, klass) {
-            var btn = select_btn(
+            const btn = select_btn(
                 function (choice) {
                     if (env)
                         env[subenv] = choice;
@@ -5289,7 +5285,7 @@ PageNetworkWiFiSettings.prototype = {
         }
 
         function read_file_content(file, callback) {
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.onload = callback;
             reader.readAsText(file);
         }
@@ -5300,7 +5296,7 @@ PageNetworkWiFiSettings.prototype = {
 
             cockpit.script("echo \"" + blob + "\" > " + id, { err: "ignore" })
                     .done(function () {
-                        var temp = (pwd + "/" + id).replace(/\r?\n|\r/g, "");
+                        const temp = (pwd + "/" + id).replace(/\r?\n|\r/g, "");
                         auth_options[prop] = btoa(temp);
                     });
         }
@@ -5330,7 +5326,7 @@ PageNetworkWiFiSettings.prototype = {
             }
         }
 
-        var render_options = { ssid_input: options.ssid ? atob(options.ssid) : "" };
+        const render_options = { ssid_input: options.ssid ? atob(options.ssid) : "" };
         if (auth_options) {
             render_options.tls_identity_input = auth_options.identity;
             render_options.peap_identity_input = auth_options.anonymous_identity;
@@ -5338,9 +5334,9 @@ PageNetworkWiFiSettings.prototype = {
             render_options.peap_username_input = auth_options.identity;
         }
 
-        var body = $(mustache.render(self.wifi_settings_template, render_options));
+        const body = $(mustache.render(self.wifi_settings_template, render_options));
 
-        ssid_input = body.find('#network-wifi-settings-ssid-input');
+        const ssid_input = body.find('#network-wifi-settings-ssid-input');
         ssid_input.change(change);
         body.find('#network-wifi-settings-mode-select').replaceWith(
             mode_btn = choicebox(options, "mode", wifi_mode_choices));
@@ -5352,27 +5348,27 @@ PageNetworkWiFiSettings.prototype = {
             device_btn = choicebox(connection, "interface_name", device_choices));
         body.find('#network-wifi-settings-security-select').replaceWith(
             security_btn = choicebox(security_options, "key_mgmt", wifi_security_choices));
-        personal_password_input = body.find('#security-personal-password-input');
+        const personal_password_input = body.find('#security-personal-password-input');
         personal_password_input.change(change);
         body.find('#security-eap-auth-select').replaceWith(eap_auth_btn = choicebox(
             auth_options, "eap", wifi_eap_auth_choices, "hidden-ep hidden-type"));
-        tls_identity_input = body.find('#security-tls-identity');
+        const tls_identity_input = body.find('#security-tls-identity');
         tls_identity_input.change(change);
-        tls_key_password_input = body.find('#security-tls-private-key-password');
+        const tls_key_password_input = body.find('#security-tls-private-key-password');
         tls_key_password_input.change(change);
-        peap_identity_input = body.find('#security-peap-identity');
+        const peap_identity_input = body.find('#security-peap-identity');
         peap_identity_input.change(change);
-        eap_domain_input = body.find('#security-eap-domain');
+        const eap_domain_input = body.find('#security-eap-domain');
         eap_domain_input.change(change);
         body.find('#security-peap-version-select').replaceWith(peap_version_btn = choicebox(
             auth_options, "phase1_peapver", wifi_peap_version_choices, "hidden-ep hidden-peap"));
         body.find('#security-peap-inner-auth-select').replaceWith(peap_inner_auth_btn = choicebox(
             auth_options, "phase2_autheap", wifi_peap_inner_auth_choices, "hidden-ep hidden-peap"));
-        peap_username_input = body.find('#security-peap-username');
+        const peap_username_input = body.find('#security-peap-username');
         peap_username_input.change(change);
-        peap_password_input = body.find('#security-peap-password');
+        const peap_password_input = body.find('#security-peap-password');
         peap_password_input.change(change);
-        eap_cert_file = body.find('#security-eap-cert-file');
+        const eap_cert_file = body.find('#security-eap-cert-file');
         eap_cert_file.on('change', function(e) {
             if (!this.files[0])
                 return null;
@@ -5381,7 +5377,7 @@ PageNetworkWiFiSettings.prototype = {
                 save_file(filename + "-ca.pem", e.target.result, "ca_cert");
             });
         });
-        tls_user_cert_file = body.find('#security-tls-user-cert-file');
+        const tls_user_cert_file = body.find('#security-tls-user-cert-file');
         tls_user_cert_file.on('change', function(e) {
             if (!this.files[0])
                 return null;
@@ -5390,7 +5386,7 @@ PageNetworkWiFiSettings.prototype = {
                 save_file(filename + "-dev.pem", e.target.result, "client_cert");
             });
         });
-        tls_user_private_key_file = body.find('#security-tls-user-private-key-file');
+        const tls_user_private_key_file = body.find('#security-tls-user-private-key-file');
         tls_user_private_key_file.on('change', function(e) {
             if (!this.files[0])
                 return null;
@@ -5430,9 +5426,9 @@ PageNetworkWiFiSettings.prototype = {
     },
 
     apply: function() {
-        var self = this;
-        var security_options = self.settings.wifi_security;
-        var model = PageNetworkWiFiSettings.model;
+        const self = this;
+        const security_options = self.settings.wifi_security;
+        const model = PageNetworkWiFiSettings.model;
 
         function show_error(error) {
             show_dialog_error('#network-wifi-settings-error', error);
