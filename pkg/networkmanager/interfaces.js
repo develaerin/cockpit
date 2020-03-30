@@ -2853,12 +2853,6 @@ PageNetworkInterface.prototype = {
                                                        dev.DeviceType == 'wifi'));
         $('#network-interface-delete').prop('hidden', !is_deletable || !managed);
 
-        function render_interface_section_separator(title) {
-            return `<tr>
-                        <td class="network-interface-separator">${title}</td>
-                    </tr>`;
-        }
-
         function render_carrier_status_row() {
             if (dev && dev.Carrier !== undefined) {
                 return `<tr>
@@ -2893,7 +2887,7 @@ PageNetworkInterface.prototype = {
         }
 
         function render_general_information_rows() {
-            return [render_interface_section_separator("General Information"),
+            return [
                 render_carrier_status_row(),
                 render_active_status_row(),
             ];
@@ -3229,7 +3223,7 @@ PageNetworkInterface.prototype = {
                 return render_settings_row(_("WiFi"), rows, configure_wifi_settings);
             }
 
-            return [render_interface_section_separator("Settings"),
+            return [
                 render_master(),
                 render_general_settings_row(),
                 render_ip_settings_row("ipv4", _("IPv4")),
