@@ -1134,6 +1134,7 @@ function NetworkManagerModel() {
             //        type_Interface.MainConnection
 
             function (obj) {
+                console.log(obj);
                 if (!obj.Device && obj._NonDeviceConnections.length === 0) {
                     drop_object(priv(obj).path);
                     return;
@@ -1332,6 +1333,7 @@ function NetworkManagerModel() {
     self.list_interfaces = function list_interfaces() {
         var path, obj;
         var result = [];
+        console.log(objects);
         for (path in objects) {
             obj = objects[path];
             if (priv(obj).type === type_Interface)
@@ -5180,7 +5182,7 @@ function init() {
 
         $(cockpit).on("locationchanged", navigate);
         navigate();
-        console.log(model.get_settings());
+        model.list_interfaces();
     });
 }
 
