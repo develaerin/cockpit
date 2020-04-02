@@ -872,7 +872,6 @@ function NetworkManagerModel() {
                 delete result["802-1x"]["ca-cert"];
         } else
             delete result["802-1x"];
-
         return result;
     }
 
@@ -5151,7 +5150,7 @@ PageNetworkWiFiSettings.prototype = {
         const options = self.settings.wifi;
         let security_options = self.settings.wifi_security;
         let auth_options = self.settings.wifi_1x;
-        var mode_btn, band_btn, channel_btn, device_btn, security_btn, eap_auth_btn,
+        var mode_btn, band_btn, ssid_btn, channel_btn, device_btn, security_btn, eap_auth_btn,
             peap_version_btn, peap_inner_auth_btn;
 
         let pwd;
@@ -5169,6 +5168,15 @@ PageNetworkWiFiSettings.prototype = {
 
         if (device_choices.length == 0)
             device_choices.push({ title: "Not detected", choice: "" });
+
+        const ssid_choices = [];
+        PageNetworkWiFiSettings.model.get_settings().Connections.forEach(function(conn) {
+            const ssid = conn[' priv'].orig.connection.id.v;
+            ssid_choices.push({ title: ssid, choice: ssid });
+        });
+
+        if (ssid_choices.length == 0)
+            ssid_choices.push({ title: "Not detected", choice: "" });
 
         function search_choices(array, value) {
             for (let i = 0; i < array.length; i++) {
@@ -5296,7 +5304,7 @@ PageNetworkWiFiSettings.prototype = {
         }
 
         function change() {
-            options.ssid = btoa(ssid_input.val());
+            options.ssid = select_btn_selected(ssid_btn);
             options.mode = select_btn_selected(mode_btn);
             options.band = select_btn_selected(band_btn);
             options.channel = parseInt(select_btn_selected(channel_btn), 10);
@@ -5332,6 +5340,8 @@ PageNetworkWiFiSettings.prototype = {
 
         const ssid_input = body.find('#network-wifi-settings-ssid-input');
         ssid_input.change(change);
+        body.find('#network-wifi-settings-ssid-select').replaceWith(
+            ssid_btn = choicebox(options, "ssid", ssid_choices));
         body.find('#network-wifi-settings-mode-select').replaceWith(
             mode_btn = choicebox(options, "mode", wifi_mode_choices));
         body.find('#network-wifi-settings-band-select').replaceWith(

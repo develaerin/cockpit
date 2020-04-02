@@ -429,9 +429,10 @@
 
   <script id="network-wifi-settings-template" type="x-template/mustache">
     <form class="ct-form">
-      <label class="control-label" for="network-wifi-settings-ssid-input" translatable="yes">SSID</label>
-      <input id="network-wifi-settings-ssid-input" class="form-control network-number-field ct-form-relax"
-             type="text" value="{{ssid_input}}"/>
+      <label class="control-label" for="network-wifi-settings-ssid-select" translatable="yes">SSID</label>
+     <div id="network-wifi-settings-ssid-select">
+       {{! the rather complex dropdown-select will be created dynamically via jquery }}
+     </div>
 
      <label class="control-label" for="network-wifi-settings-mode-select" translatable="yes">Mode</label>
      <div id="network-wifi-settings-mode-select">
