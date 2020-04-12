@@ -2111,6 +2111,11 @@ function PageNetworking(model) {
     this._init(model);
 }
 
+const ssid_choices =
+    [
+        { choice: '', title: _("Not detected") },
+    ];
+
 const wifi_mode_choices =
     [
         { choice: 'infrastructure', title: _("Client") },
@@ -5135,7 +5140,7 @@ PageNetworkWiFiSettings.prototype = {
     enter: function () {
         $('#network-wifi-settings-error').hide();
         this.settings = PageNetworkWiFiSettings.ghost_settings || PageNetworkWiFiSettings.connection.copy_settings();
-        this.update();
+        this.update_network();
     },
 
     show: function() {
@@ -5144,13 +5149,29 @@ PageNetworkWiFiSettings.prototype = {
     leave: function() {
     },
 
+    update_network: function() {
+        const self = this;
+        const promises = [];
+        self.device_choices = [];
+        PageNetworkWiFiSettings.model.list_interfaces().forEach(function (i) {
+            if (is_interesting_interface(i) && i.Device && i.Device.DeviceType === "wifi") {
+                const device_path = i.Device[' priv'].path;
+                self.device_choices.push({ title: i.Name, choice: i.Device.Interface, path: device_path });
+                promises.push(utils.update_wifi_ap(device_path));
+            }
+        });
+        Promise.all(promises).then(values => {
+            this.update();
+        });
+    },
+
     update: function() {
         const self = this;
         const connection = self.settings.connection;
         const options = self.settings.wifi;
         let security_options = self.settings.wifi_security;
         let auth_options = self.settings.wifi_1x;
-        var mode_btn, band_btn, ssid_btn, channel_btn, device_btn, security_btn, eap_auth_btn,
+        let mode_btn, band_btn, ssid_btn, channel_btn, device_btn, security_btn, eap_auth_btn,
             peap_version_btn, peap_inner_auth_btn;
 
         let pwd;
@@ -5160,23 +5181,17 @@ PageNetworkWiFiSettings.prototype = {
             pwd = data;
         });
 
-        const device_choices = [];
-        PageNetworkWiFiSettings.model.list_interfaces().forEach(function (i) {
-            if (is_interesting_interface(i) && i.Device && i.Device.DeviceType === "wifi")
-                device_choices.push({ title: i.Name, choice: i.Device.Interface });
-        });
+        function scan_ssids (device) {
+            utils.list_ssid_available(device).then(ssid_choices => {
+                ssid_btn.replaceWith(ssid_btn = choicebox(
+                    options, "ssid", ssid_choices));
+            });
+        }
 
-        if (device_choices.length == 0)
-            device_choices.push({ title: "Not detected", choice: "" });
-
-        const ssid_choices = [];
-        PageNetworkWiFiSettings.model.get_settings().Connections.forEach(function(conn) {
-            const ssid = conn[' priv'].orig.connection.id.v;
-            ssid_choices.push({ title: ssid, choice: ssid });
-        });
-
-        if (ssid_choices.length == 0)
-            ssid_choices.push({ title: "Not detected", choice: "" });
+        if (this.device_choices.length == 0)
+            this.device_choices.push({ title: "Not detected", choice: "" });
+        else
+            scan_ssids(self.device_choices[0].path);
 
         function search_choices(array, value) {
             for (let i = 0; i < array.length; i++) {
@@ -5279,6 +5294,11 @@ PageNetworkWiFiSettings.prototype = {
             }
         }
 
+        function device_block_handler(e) {
+            const dev_path = self.device_choices.find(dev => dev.title === select_btn_selected(device_btn)).path;
+            scan_ssids(dev_path);
+        }
+
         function toggle_password(container) {
             if (container.attr("type") == "password")
                 container.attr('type', "text");
@@ -5349,7 +5369,7 @@ PageNetworkWiFiSettings.prototype = {
         body.find('#network-wifi-settings-channel-select').replaceWith(
             channel_btn = choicebox(options, "channel", [{ choice: 0, title: _("Default") }]));
         body.find('#network-wifi-settings-device-select').replaceWith(
-            device_btn = choicebox(connection, "interface_name", device_choices));
+            device_btn = choicebox(connection, "interface_name", self.device_choices));
         body.find('#network-wifi-settings-security-select').replaceWith(
             security_btn = choicebox(security_options, "key_mgmt", wifi_security_choices));
         const personal_password_input = body.find('#security-personal-password-input');
@@ -5403,6 +5423,7 @@ PageNetworkWiFiSettings.prototype = {
         band_btn.on('click', 'option', channel_block_handler);
         security_btn.on('click', 'option', security_block_handler);
         eap_auth_btn.on('click', 'option', security_auth_block_handler);
+        device_btn.on('click', 'option', device_block_handler);
 
         body.find('#security-personal-password-toggle').click(function() {
             toggle_password(personal_password_input);
